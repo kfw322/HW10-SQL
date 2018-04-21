@@ -70,5 +70,93 @@ select c.first_name, c.last_name, sum(p.amount) from customer c
 inner join payment p 
 on p.customer_id = c.customer_id
 group by c.customer_id
-order by c.last_name
+order by c.last_name;
 
+#7a
+select f.title from film f
+inner join language l
+on f.language_id=l.language_id
+where l.name="English" and (f.title like("K%") or f.title like("Q%"));
+#7b:
+select actor_name from film_actor fa
+inner join actor a
+on a.actor_id = fa.actor_id
+where film_id=(select film_id from film where title="Alone Trip");
+#7c:
+select c.first_name, c.last_name, c.email from customer c 
+inner join
+	(select a.address_id from address a
+	inner join(
+		select ci.city, ci.city_id from city ci
+		inner join country co
+		on ci.country_id = co.country_id
+		where co.country="Canada") coci
+	on a.city_id=coci.city_id) ca
+on ca.address_id=c.address_id;
+#7d:
+select title from film where film_id in(
+select film_id from film_category where category_id= (
+select category_id from category where name="Family"));
+#7e:
+select title from film f 
+inner join 
+	(select film_id, sum(c) as rental_count from inventory i
+	inner join (
+		select inventory_id, count(inventory_id) as c from rental r 
+        group by inventory_id) invc
+	on invc.inventory_id = i.inventory_id
+	group by film_id) fc
+on fc.film_id=f.film_id
+order by rental_count desc;
+#7f:
+select store_id, sum(amount) as total from payment p
+inner join (
+	select rental_id, r.inventory_id, store_id from rental r
+	inner join inventory i
+	on r.inventory_id = i.inventory_id) rr
+on rr.rental_id = p.rental_id
+group by store_id;
+#7g:
+select store_id, address, city, country from country co
+inner join(
+	select store_id, address, city, country_id from city ci
+	inner join (
+		select store_id,address,city_id from store s 
+		inner join address a 
+		on a.address_id=s.address_id) aa
+	on aa.city_id = ci.city_id) cc
+on co.country_id=cc.country_id;
+#7h:
+select name, sum(amount) as total from category c
+inner join film_category fc
+on fc.category_id = c.category_id
+inner join inventory i
+on i.film_id=fc.film_id
+inner join rental r
+on r.inventory_id=i.inventory_id
+inner join payment p
+on p.rental_id=r.rental_id
+group by name
+order by total desc
+limit 5;
+
+
+#8a:
+
+create view a as
+select name, sum(amount) as total from category c
+inner join film_category fc
+on fc.category_id = c.category_id
+inner join inventory i
+on i.film_id=fc.film_id
+inner join rental r
+on r.inventory_id=i.inventory_id
+inner join payment p
+on p.rental_id=r.rental_id
+group by name
+order by total desc
+limit 5;
+#8b:
+select * from a;
+#8c: 
+drop view a;
