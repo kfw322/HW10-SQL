@@ -3,12 +3,11 @@ select * from actor;
 #1a
 select first_name,last_name from actor;
 #1b
-#alter table actor add column actor_name varchar(50);
 update actor set actor_name = concat(upper(first_name), ' ', upper(last_name));
 select actor_name from actor;
 
 #2a
-select actor_name from actor where first_name like("Joe");
+select actor_id,first_name,last_name from actor where first_name like("Joe");
 #2b
 select actor_name from actor where last_name like("%gen%");
 #2c
@@ -18,9 +17,10 @@ select country_id, country from country where country in("Afghanistan", "Banglad
 
 #3a/b
 alter table actor add column middlename blob;
+select * from actor;
 #3c
 alter table actor drop column middlename;
-
+select * from actor;
 #4a
 select last_name, count(1) as 'count' from actor group by last_name;
 #4b
@@ -30,6 +30,7 @@ where name_count >= 2;
 #4c
 update actor set first_name = "HARPO" where first_name = "groucho" and last_name = "williams";
 update actor set actor_name = concat(upper(first_name), ' ', upper(last_name));
+select * from actor where last_name= "williams";
 #4d
 update actor set first_name = case
 		when first_name="HARPO" then "GROUCHO"
@@ -38,7 +39,7 @@ update actor set first_name = case
     END
 where actor_id = 172;
 update actor set actor_name = concat(upper(first_name), ' ', upper(last_name));
-
+select * from actor where last_name="williams";
 #5
 select COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH from INFORMATION_SCHEMA.COLUMNS IC where TABLE_NAME = "address";
 create table address2 (
